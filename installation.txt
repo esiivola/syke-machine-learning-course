@@ -1,4 +1,4 @@
-Step 1: Create an new anaconda environment and open it in terminal.
+Step 1: Create an new anaconda environment and open it in terminal. Navigate to this folder
 
 Step 2: Install required anaconda packages:
 > conda install pip
