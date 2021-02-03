@@ -1,0 +1,10 @@
+Step 1: Create an new anaconda environment and open it in terminal.
+
+Step 2: Install required anaconda packages:
+> conda install pip
+
+Step 3: Install required packages to pip
+> pip install -r requirements.txt --proxy=http://gate102.vyh.fi:81
+
+Step 4: Install cartopy:
+> conda install -c conda-forge cartopy
