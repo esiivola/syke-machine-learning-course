@@ -6,7 +6,5 @@ cd ~
 git clone https://github.com/esiivola/syke-machine-learning-course
 
 cd ./syke-machine-learning-course
-
-conda env create -f environment.yml
-
-source activate SYKE-ML
+pip install -r requirements.txt
+conda install -c conda-forge cartopy
