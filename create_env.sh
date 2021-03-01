@@ -9,4 +9,4 @@ cd ./syke-machine-learning-course
 
 conda env create -f environment.yml
 
-conda activate SYKE-ML
+source activate SYKE-ML
