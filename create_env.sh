@@ -7,4 +7,4 @@ git clone https://github.com/esiivola/syke-machine-learning-course
 
 cd ./syke-machine-learning-course
 pip install -r requirements.txt
-conda install -c conda-forge cartopy
+conda install -c conda-forge cartopy=0.18.0
