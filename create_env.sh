@@ -2,7 +2,7 @@
 export GIT_COMMITTER_NAME=anonymous
 export GIT_COMMITTER_EMAIL=anon@localhost
 
-cd /home
+cd ~
 
 git clone https://github.com/esiivola/syke-machine-learning-course
 
