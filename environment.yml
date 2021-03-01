@@ -122,4 +122,4 @@ dependencies:
     - wcwidth==0.2.5
     - webencodings==0.5.1
     - zipp==3.4.0
-prefix: /home/syke-machine-learning-course/SYKE-ML-ENV
+prefix: ~/syke-machine-learning-course/SYKE-ML-ENV
