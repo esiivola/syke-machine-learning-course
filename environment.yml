@@ -7,6 +7,7 @@ dependencies:
   - _openmp_mutex=4.5=1_gnu
   - c-ares=1.17.1=h36c2ea0_0
   - ca-certificates=2020.12.5=ha878542_0
+  - cartopy=0.18.0=py39h3b23250_12
   - certifi=2020.12.5=py39hf3d152e_1
   - cycler=0.10.0=py_2
   - freetype=2.10.4=h0708190_1
@@ -61,6 +62,4 @@ dependencies:
   - xz=5.2.5=h516909a_1
   - zlib=1.2.11=h516909a_1010
   - zstd=1.4.8=ha95c52a_1
-  - pip:
-    - cartopy==0.18.1.dev192+g6dc0573
 prefix: /opt/conda/envs/SYKE-ML
