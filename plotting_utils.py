@@ -14,7 +14,6 @@ import sklearn.preprocessing # sklearn is a good library for doing basic machine
 import seaborn as sns
 
 from sklearn.linear_model import LinearRegression
-from global_land_mask import globe
 from shapely.geometry import Point
 
 SUBPLOTWIDTH = 4
