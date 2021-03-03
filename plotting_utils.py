@@ -13,8 +13,11 @@ import sklearn.preprocessing # sklearn is a good library for doing basic machine
 
 import seaborn as sns
 
-from sklearn.linear_model import LinearRegression
+
+from sklearn.metrics import roc_curve, auc
+
 from shapely.geometry import Point
+
 
 SUBPLOTWIDTH = 4
 SUBPLOTHEIGHT = 2.5
@@ -226,7 +229,7 @@ def plot_effects(data, alg, input_columns,
         X_[coordinates[0]] = LAT.reshape(-1)
         X_[coordinates[1]] = LON.reshape(-1)
         X_[normalized_columns] = normalizer.transform(X_[normalized_columns])
-        Y_pred = alg.predict(X_[alg_columns]).reshape(sh)
+        Y_pred = alg.predict(X_[input_columns]).reshape(sh)
         
         fig = plt.figure(figsize=(MAPHEIGHT, MAPWIDTH))
         ax = plt.axes(projection = projection)
