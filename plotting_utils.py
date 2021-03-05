@@ -158,7 +158,7 @@ def plot_residuals_classification(data, y_pred, y_true, plotted_columns =[], lab
         row, col = i // ncols, i % ncols
         axs[row,col].set_visible(True)
         for ij, j in enumerate(np.unique(y_true)):
-            axs[row, col].scatter(data[variable][y_true==j], y_pred[y_true==j], color=colors[ij], label=label_names[ij], **kwargs)
+            axs[row, col].scatter(data[variable][y_true==j], y_pred[y_true==j] + np.random.uniform(low=-0.1, high=0.1, size=y_pred[y_true==j].shape), color=colors[ij], label=label_names[ij], **kwargs)
         axs[row, col].set_yticks(np.unique(y_true))
         axs[row, col].set_yticklabels(label_names)
         axs[row, col].set_xlabel(name)
@@ -230,6 +230,7 @@ def plot_effects(data, alg, input_columns,
         X_[coordinates[1]] = LON.reshape(-1)
         X_[normalized_columns] = normalizer.transform(X_[normalized_columns])
         Y_pred = alg.predict(X_[input_columns]).reshape(sh)
+        Y_pred = Y_pred- np.min(Y_pred)
         
         fig = plt.figure(figsize=(MAPHEIGHT, MAPWIDTH))
         ax = plt.axes(projection = projection)
