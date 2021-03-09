@@ -30,6 +30,17 @@ BOUNDS_BALTIC_SEA = [52.5,5,67.5,40]
 BOUNDS_NORTHERN_BALTIC_SEA = [58,12,65.5,40]
 
 def get_empty_axes(nplots, ncols):
+    """
+    Returns figure and axis object for subplots
+    
+    Parameters:
+    nplots (int): number of subplots
+    ncols (int): number of columns in the subplot
+    
+    Returns:
+    fig (matplotlib.pyplot.Figure): Figure
+    axs (matplotlib.axes.Axes): Axes
+    """
     fig, axs = plt.subplots(int(np.ceil(nplots/ncols) ), ncols, constrained_layout=True, figsize=(ncols*SUBPLOTWIDTH, int(np.ceil(nplots/ncols) )*SUBPLOTHEIGHT), squeeze=False)
     
     for ax in axs.ravel():
@@ -38,7 +49,18 @@ def get_empty_axes(nplots, ncols):
     
 def plot_histogram(data_numpy, xlabel, bins=40, label=None, color='grey', ax=None):
     """
-    TODO: write documentation
+    Visualizes data as histogram
+    
+    Parameters:
+    data_numpy (numpy.ndarray): numpy ndarray of shape Nx1
+    xlabel (str): text that is displayed under the x axis
+    bins (int): number of bins in the histogram (default 40)
+    label (str): title of the histogram (default None)
+    color (str): color of the barplot
+    ax (matplotlib.axes.Axis): 
+    
+    Returns:
+    None
     """
     if ax==None:
         ax = plt.gca()
