@@ -1,6 +1,7 @@
 import numpy as np # numpy comes from "numeric python" and it is a very popular library for numerical operations
 import pandas as pd # pandas provides more advanced data structures and methods for manipulating data
 import matplotlib.pyplot as plt # a widely used visualiation library
+import matplotlib
 import cartopy.crs as ccrs # a geographic stuffwhich we use for plotting
 import cartopy
 
@@ -47,7 +48,7 @@ def get_empty_axes(nplots:int, ncols:int):
         ax.set_visible(False)
     return fig, axs
     
-def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=None, color:str='grey', ax:plt.axes.Axis=None):
+def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=None, color:str='grey', ax:matplotlib.axes.Axes=None):
     """
     Visualizes data as histogram
     
@@ -57,7 +58,7 @@ def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=Non
     bins (int): number of bins in the histogram (default 40)
     label (str): title of the histogram (default None)
     color (str): color of the barplot
-    ax (matplotlib.axes.Axis): 
+    ax (matplotlib.axes.Axes): Axes to be used for plotting (default: create new)
     
     Returns:
     None
