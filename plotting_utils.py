@@ -29,7 +29,7 @@ MAPWIDTH = 10
 BOUNDS_BALTIC_SEA = [52.5,5,67.5,40]
 BOUNDS_NORTHERN_BALTIC_SEA = [58,12,65.5,40]
 
-def get_empty_axes(nplots, ncols):
+def get_empty_axes(nplots:int, ncols:int):
     """
     Returns figure and axis object for subplots
     
@@ -47,7 +47,7 @@ def get_empty_axes(nplots, ncols):
         ax.set_visible(False)
     return fig, axs
     
-def plot_histogram(data_numpy, xlabel, bins=40, label=None, color='grey', ax=None):
+def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=None, color:str='grey', ax:plt.axes.Axis=None):
     """
     Visualizes data as histogram
     
@@ -72,7 +72,14 @@ def plot_histogram(data_numpy, xlabel, bins=40, label=None, color='grey', ax=Non
 
 def plot_histograms(data, plotted_columns=[], ncols=3):
     """
-    TODO: write documentation
+    Visualizes data as histogram
+    
+    Parameters:
+    data (pandas.DataFrame): Pandas Dataframe which columns are visualized as histograms
+    plotter_columns (List[Tuple[str,srt]]): List of
+    
+    Returns:
+    None
     """
     if len(plotted_columns)==0:
         plotted_columns = [(col,col) for col in data.columns]
