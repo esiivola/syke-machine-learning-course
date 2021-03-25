@@ -1,4 +1,6 @@
 conda install -c conda-forge pyproj
+conda install -c conda-forge pyepsg
+
 
 export GIT_COMMITTER_NAME=anonymous
 export GIT_COMMITTER_EMAIL=anon@localhost
