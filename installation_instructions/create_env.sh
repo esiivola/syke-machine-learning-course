@@ -1,3 +1,5 @@
+conda install -c conda-forge pyproj
+
 export GIT_COMMITTER_NAME=anonymous
 export GIT_COMMITTER_EMAIL=anon@localhost
 
