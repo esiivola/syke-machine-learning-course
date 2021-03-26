@@ -8,3 +8,5 @@ Step 3: Install required packages to pip
 
 Step 4: Install cartopy:
 > conda install -c conda-forge cartopy
+> conda install -c conda-forge pyproj
+> conda install -c conda-forge pyepsg
