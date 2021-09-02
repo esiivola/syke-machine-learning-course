@@ -19,6 +19,7 @@ from sklearn.metrics import roc_curve, auc
 
 from shapely.geometry import Point
 
+from typing import List, Set, Dict, Tuple, Optional, Any, Callable
 
 SUBPLOTWIDTH = 4
 SUBPLOTHEIGHT = 2.5
@@ -50,7 +51,7 @@ def get_empty_axes(nplots:int, ncols:int):
     
 def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=None, color:str='grey', ax:matplotlib.axes.Axes=None):
     """
-    Visualizes data as histogram
+    Visualizes data as a histogram
     
     Parameters:
     data_numpy (numpy.ndarray): numpy ndarray of shape Nx1
@@ -68,17 +69,17 @@ def plot_histogram(data_numpy:np.ndarray, xlabel:str, bins:str=40, label:str=Non
     ax.hist(data_numpy, bins=bins, color=color, label=label)
     ax.set_yticks([])
     ax.set_ylabel("Frequency")
-    ax.set_xlabel(xlabel) #title(title)
+    ax.set_xlabel(xlabel)
     ax.tick_params(left = False, bottom = False)
 
-def plot_histograms(data, plotted_columns=[], ncols=3):
+def plot_histograms(data: pd.DataFrame, plotted_columns:List[Tuple[str,str]]=[], ncols:int=3):
     """
-    Visualizes data as histogram
+    Visualizes data as histograms that are presented in an array. Parameter data contains all data and plotted columns defines the columns of that data that are included in teh figure.
     
     Parameters:
     data (pandas.DataFrame): Pandas Dataframe which columns are visualized as histograms
-    plotter_columns (List[Tuple[str,srt]]): List of
-    
+    plotted_columns (List[Tuple[str,srt]]): List of tuples containing the visualized columns. The first item of each tuple indicates the name of the column in the pandas dataframe and the second item indicates the visualized name in the histogram
+    ncols (int): number of columns in the histogram array, defaults to 3.
     Returns:
     None
     """
@@ -91,9 +92,19 @@ def plot_histograms(data, plotted_columns=[], ncols=3):
         axs[row,col].set_visible(True)
         plot_histogram(data[variable], name, ax=axs[row,col])
 
-def plot_region_in_map(bounding_box, bounding_box_context=BOUNDS_BALTIC_SEA, projection=ccrs.EuroPP(), coastline=True, stock_img=True, title=None):
+def plot_region_in_map(bounding_box:Tuple[int,int,int,int], bounding_box_context:Tuple[int,int,int,int]=BOUNDS_BALTIC_SEA, projection:ccrs.CRS=ccrs.EuroPP(), coastline:bool=True, stock_img:bool=True, title:str=None):
     """
+    The function plots a map in a specific projection (parameter projection) so that the map is limited by bounding_box_context and within those bounds bounding_box is visualized with a solid line
     box = lon_min, lat_min, lon_max, lat_max
+    Parameters:
+    bounding_box (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the visualized bounding box
+    bounding_box_context (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the bounds of the plot
+    projection (ccrs.CRS): Projection used in plotting. defaults to ccrs.EuroPP
+    coastline (bool): If the plot visualizes the coastline
+    stock_img (bool): If the plot visualizes the background
+    title (str): The title of the plot
+    Returns:
+    matplotlib.figure that contains the region
     """
     fig = plt.figure(figsize=(MAPHEIGHT, MAPWIDTH))
     ax = plt.axes(projection = projection)
@@ -116,44 +127,39 @@ def plot_region_in_map(bounding_box, bounding_box_context=BOUNDS_BALTIC_SEA, pro
         plt.title(title)
     return fig
 
-def scatterplot_in_map(longitudes, latitudes, bounding_box=None, bounding_box_context=BOUNDS_BALTIC_SEA, projection=ccrs.EuroPP(), coastline=True, stock_img=True, title=None, **kwargs):
+def scatterplot_in_map(longitudes:np.array, latitudes:np.array, bounding_box:Tuple[int,int,int,int], bounding_box_context:Tuple[int,int,int,int]=BOUNDS_BALTIC_SEA, projection:ccrs.CRS=ccrs.EuroPP(), coastline:bool=True, stock_img:bool=True, title:str=None, **kwargs):
     """
-    TODO: write documentation
+    The function plots scatterplot within a map in a specific projection (parameter projection) so that the map is limited by bounding_box_context and within those bounds bounding_box is visualized with a solid line
+    box = lon_min, lat_min, lon_max, lat_max
+    Parameters:
+    longitudes (np.array): a Nx1 array containing the longitudes
+    latitudes (np.array): a Nx1 array containing the latitudes
+    bounding_box (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the visualized bounding box
+    bounding_box_context (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the bounds of the plot
+    projection (ccrs.CRS): Projection used in plotting. defaults to ccrs.EuroPP
+    coastline (bool): If the plot visualizes the coastline
+    stock_img (bool): If the plot visualizes the background
+    title (str): The title of the plot
+    **kwargs: extra parameters to be passed to the matplotlib pyplot scatter-function 
+    Returns:
+    matplotlib.figure that contains the region
     """
     plot_region_in_map(bounding_box, bounding_box_context=bounding_box_context, projection=projection,coastline=coastline, stock_img=stock_img, title=title)
     plt.scatter(longitudes, latitudes, transform=ccrs.PlateCarree(), **kwargs)
 
-def plot_class_kdes(data, class_column, plotted_columns = [], ncols=3, **kwargs):
-    if len(plotted_columns)==0:
-        plotted_columns = [(col, col) for col in data.columns if col not in [class_column]]
-    
-    nplots = len(plotted_columns)
-
-    fig, axs = get_empty_axes(nplots, ncols)
-    
-    for i, (variable, name) in enumerate(plotted_columns):
-        row, col = i // ncols, i % ncols
-        axs[row,col].set_visible(True)
-        
-        if i==nplots-1:
-            legend = True
-        else:
-            legend = False
-        if (data[variable].fillna(-9999) % 1  == 0).all() and np.unique(data[variable][~np.isnan(data[variable])]).shape[0]<10: # check if all variables as discrete
-            sns.histplot(data=data, x=variable, ax = axs[row,col], hue=class_column, fill=True, common_norm=True, element="bars",
-                                alpha=.5, linewidth=0, legend=legend, discrete=True)
-            uniques = np.unique(data[variable][~np.isnan(data[variable])])
-            axs[row,col].set_xticks(np.arange(np.min(uniques), np.max(uniques)+1))
-        else:
-            sns.kdeplot(data=data, x=variable, ax = axs[row,col], hue=class_column, fill=True, common_norm=True,
-                    alpha=.5, linewidth=0, legend=legend)
-        axs[row, col].set_yticks([])
-        if col != 0:
-            axs[row, col].set_ylabel(None)
-
-def plot_class_marginals(data, class_column, plotted_columns = [], ncols=3, flip_xy=False, **kwargs):
+def plot_class_marginals(data: pd.DataFrame, class_column: str, plotted_columns:List[Tuple[str,str]] = [], ncols:int=3, flip_xy:bool=False, **kwargs):
     """
-    TODO: write documentation
+    Visualizes  the marginal distributions of each class for different columns in the data. Parameter data contains all data and plotted columns defines the columns of that data that are included in the figure. parameter class_column defines the column which contains the class labels. The marginals in each subplot are plotted for all classes separately.
+    
+    Parameters:
+    data (pandas.DataFrame): Pandas Dataframe which columns are visualized as histograms
+    class_column (int): The column in data that contains the class labels
+    plotted_columns (List[Tuple[str,srt]]): List of tuples containing the visualized columns. The first item of each tuple indicates the name of the column in the pandas dataframe and the second item indicates the visualized name 
+    ncols (int): number of columns in the histogram array, defaults to 3.
+    flip_xy (bool): default behaviour is to plot different classes on y-axis
+    **kwargs: extra parameters to be passed to the seaborn stripplot-function 
+    Returns:
+    None
     """
     if len(plotted_columns)==0:
         plotted_columns = [(col, col) for col in data.columns if col not in [class_column]]
@@ -171,12 +177,22 @@ def plot_class_marginals(data, class_column, plotted_columns = [], ncols=3, flip
             if col != 0:
                 axs[row, col].set_ylabel(None)
 
-def plot_residuals_classification(data, y_pred, y_true, plotted_columns =[], label_names=None , ncols=3, **kwargs):
+def plot_residuals_classification(data: pd.DataFrame, y_pred: np.ndarray, y_true: np.ndarray, plotted_columns:List[Tuple[str,str]]=[], label_names:List[Tuple[int,str]]=None , ncols:int=3, **kwargs):
     """
-    TODO: write documentation
+    Visualizes the predicted classes as a function of one column at a time so that the tru labels are visualized with different colors. The purpose of the function is to help find biased predictions for different classes.
+    
+    Parameters:
+    data (pd.DataFrame): Data of size N x D the predictions have been made with
+    y_pred (np.ndarray): N x 1 predictions for the data
+    y_true (np.ndarray): N x 1 true labels for the data
+    plotted_columns (List[Tuple[str,srt]]): List of tuples containing the visualized columns. The first item of each tuple indicates the name of the column in the pandas dataframe and the second item indicates the visualized name
+    label_names (List[Tuple[int, str]]): List of tuples with label names. The first member of the tuple contains the integers differentiating the classes and the second member contains the name of that class
+    ncols (int): number of columns in the histogram array, defaults to 3.
+    Returns:
+    None
     """
     if label_names is None:
-        label_names = np.unique(y_true)
+        label_names = [ (i,i) for i in np.unique(y_true)]
     if len(plotted_columns)==0:
         plotted_columns = [(col, col) for col in data.columns]
     
@@ -187,27 +203,32 @@ def plot_residuals_classification(data, y_pred, y_true, plotted_columns =[], lab
     for i, (variable, name) in enumerate(plotted_columns):
         row, col = i // ncols, i % ncols
         axs[row,col].set_visible(True)
-        for ij, j in enumerate(np.unique(y_true)):
-            axs[row, col].scatter(data[variable][y_true==j], y_pred[y_true==j] + np.random.uniform(low=-0.1, high=0.1, size=y_pred[y_true==j].shape), color=colors[ij], label=label_names[ij], **kwargs)
-        axs[row, col].set_yticks(np.unique(y_true))
-        axs[row, col].set_yticklabels(label_names)
+        for ij, (c , label) in enumerate(label_names):
+            axs[row, col].scatter(data[variable][y_true==c], y_pred[y_true==c] + np.random.uniform(low=-0.1, high=0.1, size=y_pred[y_true==c].shape), color=colors[ij], label=label, **kwargs)
+        
+        axs[row, col].set_yticks([t[0] for t in label_names])
+        axs[row, col].set_yticklabels([t[1] for t in label_names])
         axs[row, col].set_xlabel(name)
         if col==0:
             axs[row, col].set_ylabel("Predicted label")
         if i==len(plotted_columns)-1:
             axs[row, col].legend(title="True label")
 
-def plot_scatter(data, columns_x = [], columns_y = [], ncols=3, **kwargs):
+def plot_scatter(data: pd.DataFrame, columns_x:List[Tuple[str,str]] = [], columns_y:List[Tuple[str,str]] = [], ncols:int=3, **kwargs):
     """
-    TODO: write documentation
+    Visualizes the data in scatterplot. The visualized columns of data are defined in columns_x and columns_y.
+    
+    Parameters:
+    data (pd.DataFrame): Data that is visualized
+    columns_x (List[Tuple[str,str]]): list that defines the data on x-axises. The first item of each tuple in the list defines the column name and the second item defines the visualized name. If the list contains only one item, same column is used in all figures
+    columns_y (List[Tuple[str,str]]): list that defines the data on y-axises. The first item of each tuple in the list defines the column name and the second item defines the visualized name. If the list contains only one item, same column is used in all figures
+    ncols (int): number of columns in the histogram array, defaults to 3.
+    **kwargs: extra parameters to be passed to the matplotlib pyplot scatter-function
+    Returns:
+    None
     """
     if len(columns_y)==0 and len(columns_x)==0:
         raise ValueError("Both columns_x and columns_y cannot be empty")
-    
-    if len(columns_x)==0:
-        columns_x = [(col, col) for col in data.columns if col not in [t[0] for t in columns_y]]
-    elif len(columns_y)==0:
-        columns_y = [(col, col) for col in data.columns if col not in [t[0] for t in columns_x]]
     
     if len(columns_x)==1 and len(columns_y)>0:
         columns_x = [(columns_x[0][0], columns_x[0][1]) for _ in range(len(columns_y)) ]
@@ -224,13 +245,32 @@ def plot_scatter(data, columns_x = [], columns_y = [], ncols=3, **kwargs):
         axs[row,col].set_ylabel(label_y)
         axs[row,col].set_xlabel(label_x)
 
-def plot_effects(data, alg, input_columns,
-                      normalizer, normalized_columns, plotted_columns=[],
-                      periodic_columns=[], ncols=3, coordinates=None,
-                      bounding_box=None, bounding_box_context=BOUNDS_NORTHERN_BALTIC_SEA, 
-                      projection=ccrs.EuroPP(), coastline=False, stock_img=False):
+def plot_effects(data: pd.DataFrame, alg:Callable, input_columns:List[str],
+                 normalizer:Callable, normalized_columns:List[str], plotted_columns:List[Tuple[str,str]]=[],
+                 periodic_columns:List[str]=[], ncols:int=3, coordinates:Tuple[str,str]=None,
+                 bounding_box:Tuple[int,int,int,int]=None, bounding_box_context:Tuple[int,int,int,int]=BOUNDS_NORTHERN_BALTIC_SEA, 
+                 projection:ccrs.CRS=ccrs.EuroPP(), coastline:bool=False, stock_img:bool=False):
     """
-    TODO: write documentation
+    Visualizes the predictions with respect to different columns by varying one column at a time and setting the rest of the columns to their median values.
+    
+    Parameters:
+    data (pd.DataFrame): Data that is visualized
+    alg (Callable): The prediction algorithm 
+    input_columns (List[str]): Names of the columns that the prediction algorithm takes as an input
+    plotted_columns (List[Tuple[str,str]]): List of tuples containing the visualized columns. The first item of each tuple indicates the name of the column in the pandas dataframe and the second item indicates the visualized name
+    normalizer (Callable): The normalizer object that normalizes the data
+    normalized_columns (List[str]): The columns that are normalized
+    periodic_columns (List[str]): The columns that are periodic in nature
+    ncols (int): number of columns in the histogram array, defaults to 3.
+    coordinates (Tuple[str,str]): names of the columns defining latitudes and longitudes
+    bounding_box (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the visualized bounding box
+    bounding_box_context (Tuple[int,int,int,int]): a Tuple with (longitude min, latitude min, longitude max, latitude max) for the bounds of the plot
+    projection (ccrs.CRS): Projection used in plotting. defaults to ccrs.EuroPP
+    coastline (bool): If the plot visualizes the coastline
+    stock_img (bool): If the plot visualizes the background
+    title (str): The title of the plot
+    Returns:
+    matplotlib.figure that contains the region
     """
     if len(plotted_columns)==0:
         tmp = coordinates or []
@@ -307,7 +347,14 @@ def plot_effects(data, alg, input_columns,
         axs[row, col].set_xlabel(column_label)
         axs[row, col].set_ylabel('Effect on output')
 
-def draw_binary_roc(y, y_score, **kwargs):
+def draw_binary_roc(y:np.ndarray , y_score:np.ndarray, **kwargs):
+    """
+    Visualizes the ROC curve
+    
+    Parameters:
+    y (np.ndarray): The true labels
+    y_score (np.ndarray): Confidence of class prediction
+    """
     fpr, tpr, _ = roc_curve(y, y_score)
     roc_auc = auc(fpr, tpr) 
     # Plot the roc-curve
