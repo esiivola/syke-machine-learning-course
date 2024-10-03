@@ -1,16 +1,21 @@
-Step 1: Create an new anaconda environment and open it in terminal. Navigate to this folder
+Step 1: Create an new miniconda/anaconda environment and open it in terminal. These instructions have been created with miniconda and python version 3.12.6. I highly suggest using miniconda. You can do the same with e.g. the command 
+> conda create --name <name of the jupyter environment> python=3.12.6
+> conda activate <name of the jupyter environment>
 
-Step 2: Install required anaconda packages:
+Step 2: After creating the environment, navigate to this folder
+> ...
+
+Step 3: Install required anaconda packages:
 > conda install pip
 
-Step 3: Install required packages to pip
-> pip install -r requirements.txt --proxy=http://gate102.vyh.fi:81
+Step 4: Install required packages to pip
+> python -m pip install -r requirements.txt
 
-Step 4: Install cartopy:
-> conda install -c conda-forge cartopy
-> conda install -c conda-forge pyproj
-> conda install -c conda-forge pyepsg
+Step 5: Install cartopy:
+> conda install -c conda-forge cartopy=0.22.0
+> conda install -c conda-forge pyproj=3.6.1
+> conda install -c conda-forge pyepsg=0.4.0
 
-Step 5: add current kernel to jupyter notebook:
+Step 6: add current kernel to jupyter notebook:
 > conda install -c anaconda ipykernel
 > python -m ipykernel install --user --name=<name of the jupyter environment>
