@@ -13,3 +13,4 @@ Step 4: Install cartopy:
 
 Step 5: add current kernel to jupyter notebook:
 > conda install -c anaconda ipykernel
+> python -m ipykernel install --user --name=<name of the jupyter environment>
