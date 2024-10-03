@@ -10,3 +10,6 @@ Step 4: Install cartopy:
 > conda install -c conda-forge cartopy
 > conda install -c conda-forge pyproj
 > conda install -c conda-forge pyepsg
+
+Step 5: add current kernel to jupyter notebook:
+> conda install -c anaconda ipykernel
